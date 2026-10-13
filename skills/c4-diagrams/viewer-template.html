@@ -1,0 +1,150 @@
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: an architect's drawing set — a title block, a level index like a sheet list, then one sheet per diagram. */
+:root {
+  --bg: #f4f6f9;
+  --sheet: #ffffff;
+  --fg: #17202b;
+  --muted: #586473;
+  --rule: #d5dce5;
+  --accent: #1168bd;
+  --accent-ink: #0b4884;
+  --assumed: #b45309;
+  --chip: #e7eef7;
+  --warn: #b91c1c;
+  --warn-bg: #fdecec;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --sheet: #161d27; --fg: #e4e9f0; --muted: #96a3b4; --rule: #2a3442;
+    --accent: #5aa2e8; --accent-ink: #8fc2f5; --assumed: #f0a04b; --chip: #1f2a38; --warn: #f87171; --warn-bg: #3a1a1c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --sheet: #161d27; --fg: #e4e9f0; --muted: #96a3b4; --rule: #2a3442;
+  --accent: #5aa2e8; --accent-ink: #8fc2f5; --assumed: #f0a04b; --chip: #1f2a38; --warn: #f87171; --warn-bg: #3a1a1c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--font-body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--chip); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+
+.titleblock { display: grid; gap: 6px; border-bottom: 2px solid var(--fg); padding-bottom: 14px; }
+.titleblock .kicker { font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+.titleblock h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 600; }
+.titleblock .sub { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.index { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.lvl { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center;
+  padding: 12px 14px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; color: inherit; text-decoration: none; }
+a.lvl:hover { border-color: var(--accent); }
+a.lvl:focus-visible, .copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lvl-n { grid-row: span 2; font: 600 28px/1 var(--font-display); color: var(--accent); width: 1.2em; text-align: center; }
+.lvl-name { font-weight: 600; }
+.lvl-count { font-size: 13px; color: var(--muted); }
+.lvl.off { opacity: 0.6; background: transparent; border-style: dashed; }
+.lvl.off .lvl-n { color: var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0,0,0,0.15); }
+.sw.assumed { background: transparent; border: 2px dashed var(--assumed); }
+
+.level { display: grid; gap: 18px; }
+.level h2 { font-size: 26px; display: grid; gap: 4px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); padding-top: 12px; }
+
+.diagram { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 18px; display: grid; gap: 10px; min-width: 0; }
+.d-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.d-head h3 { font-size: 20px; font-weight: 600; }
+.d-sum { margin: 0; max-width: 72ch; color: var(--fg); }
+.d-src { margin: 0; font-size: 13px; color: var(--muted); }
+.canvas { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: #ffffff; padding: 12px; min-width: 0; }
+.canvas pre.mermaid { margin: 0; display: flex; justify-content: center; min-width: max-content; color: #17202b; }
+.copy { font: 500 13px/1 var(--font-body); padding: 8px 12px; border-radius: 5px; border: 1px solid var(--accent); background: transparent; color: var(--accent-ink); cursor: pointer; }
+.copy:hover { background: var(--chip); }
+.fallback { width: 100%; min-height: 160px; font: 12px/1.45 var(--font-mono); background: var(--chip); color: var(--fg); border: 1px solid var(--rule); border-radius: 5px; padding: 10px; }
+.skip { margin: 0; padding: 12px 14px; border-left: 3px solid var(--rule); color: var(--muted); }
+
+.aside { display: grid; gap: 10px; }
+.aside h2 { font-size: 22px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.lede { margin: 0; color: var(--muted); max-width: 72ch; }
+.notes { margin: 0; padding-left: 18px; display: grid; gap: 8px; max-width: 90ch; }
+.tag { font: 500 11px/1 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; background: var(--chip); color: var(--accent-ink); padding: 3px 6px; border-radius: 3px; }
+
+.warn { color: var(--warn); font-weight: 600; }
+.flag { margin: 0; padding: 8px 12px; border-radius: 5px; background: var(--warn-bg); color: var(--warn); font-weight: 500; }
+.flag a, .mismatch a { color: inherit; }
+.mismatch { display: grid; gap: 12px; padding: 18px; border: 2px solid var(--warn); border-radius: 8px; background: var(--sheet); }
+.mismatch h2 { font-size: 22px; color: var(--warn); display: flex; gap: 10px; align-items: center; }
+.count { font: 600 13px/1 var(--font-mono); background: var(--warn); color: var(--sheet); padding: 4px 8px; border-radius: 999px; }
+.mm { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--rule); min-width: 0; }
+.mm h3 { font-size: 18px; display: flex; gap: 10px; align-items: baseline; }
+.mm-id { font: 600 13px/1 var(--font-mono); color: var(--warn); }
+.mm dl { margin: 0; display: grid; grid-template-columns: minmax(120px, max-content) 1fr; gap: 6px 16px; }
+.mm dt { color: var(--muted); font-size: 13px; padding-top: 2px; }
+.mm dd { margin: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.none { color: var(--warn); font-style: italic; }
+@media (max-width: 560px) { .mm dl { grid-template-columns: 1fr; } .mm dd { margin-bottom: 6px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="titleblock">
+    <span class="kicker">C4 model</span>
+    <h1>__SYSTEM__</h1>
+    <span class="sub">__SUBTITLE__</span>
+  </header>
+
+  <nav class="index" aria-label="Levels">
+__NAV__
+  </nav>
+
+  <div class="legend" aria-label="Key">
+    <span><i class="sw" style="background:#08427b"></i>Person</span>
+    <span><i class="sw" style="background:#1168bd"></i>This system</span>
+    <span><i class="sw" style="background:#438dd5"></i>Container</span>
+    <span><i class="sw" style="background:#85bbf0"></i>Component</span>
+    <span><i class="sw" style="background:#999999"></i>Outside system</span>
+    <span><i class="sw assumed"></i>Assumed (dashed box or dotted arrow)</span>
+    <span><i class="sw" style="background:transparent;border:3px solid #dc2626"></i>Code differs from docs (thick red outline or thick arrow, ⚠)</span>
+  </div>
+
+__MISMATCHES__
+
+__SECTIONS__
+
+__NOTES__
+</div>
+
+<script type="application/json" id="c4-data">__DATA__</script>
+<script>
+(function () {
+  var data = {};
+  try { data = JSON.parse(document.getElementById('c4-data').textContent); } catch (e) {}
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-id');
+      var text = data[id] || '';
+      var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy Mermaid'; }, 1600); };
+      var fallback = function () {
+        var ta = document.getElementById('text-' + id);
+        if (!ta) return;
+        ta.hidden = false; ta.focus(); ta.select();
+        btn.textContent = 'Select all and copy below';
+      };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+        else fallback();
+      } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
